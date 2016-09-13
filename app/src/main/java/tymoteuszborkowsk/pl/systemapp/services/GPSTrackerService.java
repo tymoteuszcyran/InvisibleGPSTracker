@@ -14,6 +14,8 @@ import android.util.Log;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import tymoteuszborkowsk.pl.systemapp.dropbox.DropboxService;
+
 public class GPSTrackerService extends Service implements LocationListener {
 
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES_NETWORK = 10;
@@ -24,10 +26,10 @@ public class GPSTrackerService extends Service implements LocationListener {
     private static final long MIN_TIME_BW_UPDATES_GPS = 2000 * 60;
 
     private boolean canGetLocation = false;
-
-    private Location location;
     private double latitude;
     private double longtitude;
+
+    private Location location;
     private Looper looper;
 
     protected LocationManager locationManager;
@@ -53,8 +55,8 @@ public class GPSTrackerService extends Service implements LocationListener {
                     double longtitude = getLongtitude();
 
                     String coordinates = latitude + ", " + longtitude;
-                    System.out.println(coordinates);
                     textFileService.createNote(GPSTrackerService.this, coordinates);
+                    textFileService.uploadNote();
                 }
 
                 looper.quit();

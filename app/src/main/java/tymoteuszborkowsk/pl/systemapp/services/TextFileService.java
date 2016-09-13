@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.Environment;
 import android.widget.Toast;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -11,13 +13,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Calendar;
 
+import tymoteuszborkowsk.pl.systemapp.dropbox.DropboxService;
+
 public class TextFileService {
+
+    private DropboxService dropboxService;
+    private File coordinatesFile;
 
     public void createNote(Context context, String text){
         String root = context.getFilesDir().getAbsolutePath();
         String currentTime = getCurrentTime();
-
-
 
         File file = new File(root + "/system.txt");
         if (!file.exists()) {
@@ -27,7 +32,8 @@ public class TextFileService {
                 e.printStackTrace();
             }
         }
-        System.out.println(file.getAbsolutePath());
+
+        coordinatesFile = file;
 
         try {
             FileWriter fileWriter = new FileWriter(file);
@@ -38,20 +44,20 @@ public class TextFileService {
             e.printStackTrace();
         }
 
+    }
 
-
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line;
-
-            while ((line = br.readLine()) != null) {
-                System.out.println(line);
+    public void uploadNote(){
+        if(coordinatesFile != null) {
+            dropboxService = new DropboxService();
+            try {
+                byte[] data = FileUtils.readFileToByteArray(coordinatesFile);
+                dropboxService.upload(data);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            br.close();
+
         }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+
     }
 
 
