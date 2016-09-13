@@ -32,11 +32,11 @@ public class MainActivity extends AppCompatActivity {
                               Manifest.permission.ACCESS_NETWORK_STATE,
                               Manifest.permission.ACCESS_WIFI_STATE};
 
-            if (!hasPermission(perms)) {
+            if (!hasPermission(perms))
                 requestPermissions( perms, PERMMISION_REQUEST_CODE);
-            }else
-                startService(new Intent(this, GPSTrackerService.class));
-        }
+
+        }else
+            startService(new Intent(this, GPSTrackerService.class));
 
 
     }

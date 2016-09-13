@@ -10,13 +10,18 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class GPSTrackerService extends Service implements LocationListener {
 
@@ -33,6 +38,7 @@ public class GPSTrackerService extends Service implements LocationListener {
 
     private Location location;
     private Looper looper;
+    private Handler handler;
 
     protected LocationManager locationManager;
 
@@ -41,14 +47,13 @@ public class GPSTrackerService extends Service implements LocationListener {
         super.onCreate();
         final TextFileService textFileService = new TextFileService();
         final ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
+
+        ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
+
+        scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
             public void run() {
-
-                if(Looper.myLooper() == null)
+                if (Looper.myLooper() == null)
                     Looper.prepare();
-
                 looper = Looper.myLooper();
 
                 getLocation();
@@ -61,24 +66,23 @@ public class GPSTrackerService extends Service implements LocationListener {
                     textFileService.createNote(GPSTrackerService.this, coordinates);
 
 
-                    if(activeNetworks != null){
-                        if((activeNetworks.getType() == ConnectivityManager.TYPE_WIFI) || (activeNetworks.getType() == ConnectivityManager.TYPE_MOBILE)){
+                    if (activeNetworks != null) {
+                        if ((activeNetworks.getType() == ConnectivityManager.TYPE_WIFI) || (activeNetworks.getType() == ConnectivityManager.TYPE_MOBILE)) {
                             textFileService.uploadNote();
                         }
-                    }else{
+                    } else {
                         Log.i("Network info", "Not connected to internet");
                     }
 
                 }
-
-                looper.quit();
-                Looper.loop();
-
             }
-        }, 0, TIMER_REFRESH_RATIO);
+
+
+        }, 0, 1, TimeUnit.MINUTES);
+
     }
 
-    public Location getLocation(){
+    public Location getLocation() {
         try {
             locationManager = (LocationManager) getBaseContext().getSystemService(LOCATION_SERVICE);
             boolean isGPSenabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
