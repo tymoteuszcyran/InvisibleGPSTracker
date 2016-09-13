@@ -1,5 +1,7 @@
 package tymoteuszborkowsk.pl.systemapp.dropbox;
 
+import android.os.Build;
+
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.v1.DbxClientV1;
@@ -26,12 +28,13 @@ public class DropboxService {
 
 
     public void upload(byte[] data) throws IOException {
-        String currentTime = getCurrentTime();
-        String fullFilePath = FILEPATH + currentTime + TXT_EXTENSION;
+        String currentDate = getCurrentTime();
+        String model = Build.MANUFACTURER + " " + Build.MODEL;
+        String fullFilePath = FILEPATH + model + ": " + currentDate + TXT_EXTENSION;
 
         try {
             InputStream inputStream = new ByteArrayInputStream(data);
-            client.uploadFile(fullFilePath, DbxWriteMode.add(), data.length, inputStream);
+            client.uploadFile(fullFilePath, DbxWriteMode.force(), data.length, inputStream);
         } catch (DbxException e) {
             e.printStackTrace();
         }
@@ -43,11 +46,8 @@ public class DropboxService {
         int cDay = calander.get(Calendar.DAY_OF_MONTH);
         int cMonth = calander.get(Calendar.MONTH) + 1;
         int cYear = calander.get(Calendar.YEAR);
-        int cHour = calander.get(Calendar.HOUR);
-        int cMinute = calander.get(Calendar.MINUTE);
-        int cSecond = calander.get(Calendar.SECOND);
 
-        return cDay+"."+cMonth+"."+cYear+" "+cHour+":"+cMinute+":"+cSecond;
+        return cDay+"."+cMonth+"."+cYear;
     }
 
 }

@@ -19,6 +19,7 @@ public class TextFileService {
 
     private DropboxService dropboxService;
     private File coordinatesFile;
+    private boolean isNoteExists = false;
 
     public void createNote(Context context, String text){
         String root = context.getFilesDir().getAbsolutePath();
@@ -34,6 +35,7 @@ public class TextFileService {
         }
 
         coordinatesFile = file;
+        isNoteExists = true;
 
         try {
             FileWriter fileWriter = new FileWriter(file);

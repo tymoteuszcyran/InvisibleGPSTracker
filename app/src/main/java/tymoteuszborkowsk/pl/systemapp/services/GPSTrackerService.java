@@ -14,8 +14,6 @@ import android.util.Log;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import tymoteuszborkowsk.pl.systemapp.dropbox.DropboxService;
-
 public class GPSTrackerService extends Service implements LocationListener {
 
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES_NETWORK = 10;
@@ -152,7 +150,6 @@ public class GPSTrackerService extends Service implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.i("LOCATION", "location was changed");
     }
 
     @Override

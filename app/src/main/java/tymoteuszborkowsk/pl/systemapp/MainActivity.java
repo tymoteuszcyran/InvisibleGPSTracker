@@ -26,9 +26,11 @@ public class MainActivity extends AppCompatActivity {
 
         if (shouldAskPermission()) {
             String perms[] = {Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                Manifest.permission.ACCESS_FINE_LOCATION,
-                                Manifest.permission.ACCESS_COARSE_LOCATION,
-                                Manifest.permission.READ_EXTERNAL_STORAGE};
+                              Manifest.permission.ACCESS_FINE_LOCATION,
+                              Manifest.permission.ACCESS_COARSE_LOCATION,
+                              Manifest.permission.READ_EXTERNAL_STORAGE,
+                              Manifest.permission.ACCESS_NETWORK_STATE,
+                              Manifest.permission.ACCESS_WIFI_STATE};
 
             if (!hasPermission(perms)) {
                 requestPermissions( perms, PERMMISION_REQUEST_CODE);
