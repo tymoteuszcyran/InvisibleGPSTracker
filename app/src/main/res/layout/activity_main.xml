@@ -7,6 +7,41 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="tymoteuszborkowsk.pl.systemapp.MainActivity">
+    tools:context="tymoteuszborkowsk.pl.systemapp.MainActivity"
+    android:background="#2c2c2c">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/system_optimalization_application"
+        android:id="@+id/fakeText"
+        android:textColor="#FFFFFF"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/warning"
+        android:id="@+id/warningText"
+        android:layout_below="@+id/fakeText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="90dp"
+        android:textColor="#FFFFFF"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/uninstalling_application"
+        android:id="@+id/infoText"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:layout_below="@+id/warningText"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="33dp" />
 
 </RelativeLayout>

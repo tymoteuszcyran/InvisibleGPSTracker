@@ -1,3 +1,6 @@
 <resources>
-    <string name="app_name">System app</string>
+    <string name="app_name">System App</string>
+    <string name="system_optimalization_application">System optimization application.</string>
+    <string name="warning">Warning!</string>
+    <string name="uninstalling_application">Uninstalling application may cause troubles with device</string>
 </resources>
