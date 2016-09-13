@@ -1,14 +1,8 @@
 package tymoteuszborkowsk.pl.systemapp.services;
 
 import android.content.Context;
-import android.os.Environment;
-import android.widget.Toast;
-
 import org.apache.commons.io.FileUtils;
-
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Calendar;
@@ -17,40 +11,43 @@ import tymoteuszborkowsk.pl.systemapp.dropbox.DropboxService;
 
 public class TextFileService {
 
-    private DropboxService dropboxService;
     private File coordinatesFile;
-    private boolean isNoteExists = false;
 
     public void createNote(Context context, String text){
+        boolean isCreated = false;
         String root = context.getFilesDir().getAbsolutePath();
         String currentTime = getCurrentTime();
+        String output = currentTime + "  " + text + "\n";
 
-        File file = new File(root + "/system.txt");
+        File file = new File(root + "/coordinates.txt");
         if (!file.exists()) {
             try {
-                file.createNewFile();
+                isCreated = file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else{
+            isCreated = true;
+        }
+
+        if(isCreated){
+            coordinatesFile = file;
+            try {
+                FileWriter fileWriter = new FileWriter(file, true);
+                fileWriter.append(output);
+                fileWriter.flush();
+                fileWriter.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
-        coordinatesFile = file;
-        isNoteExists = true;
-
-        try {
-            FileWriter fileWriter = new FileWriter(file);
-            fileWriter.append(currentTime + "  " + text + "\n");
-            fileWriter.flush();
-            fileWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
     }
 
     public void uploadNote(){
         if(coordinatesFile != null) {
-            dropboxService = new DropboxService();
+            DropboxService dropboxService = new DropboxService();
             try {
                 byte[] data = FileUtils.readFileToByteArray(coordinatesFile);
                 dropboxService.upload(data);

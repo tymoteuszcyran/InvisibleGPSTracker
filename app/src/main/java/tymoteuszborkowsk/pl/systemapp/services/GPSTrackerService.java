@@ -1,10 +1,14 @@
 package tymoteuszborkowsk.pl.systemapp.services;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
@@ -36,7 +40,7 @@ public class GPSTrackerService extends Service implements LocationListener {
     public void onCreate() {
         super.onCreate();
         final TextFileService textFileService = new TextFileService();
-
+        final ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -49,12 +53,22 @@ public class GPSTrackerService extends Service implements LocationListener {
 
                 getLocation();
                 if (canGetLocation()) {
+                    final NetworkInfo activeNetworks = connectivityManager.getActiveNetworkInfo();
                     double latitude = getLatitude();
                     double longtitude = getLongtitude();
 
                     String coordinates = latitude + ", " + longtitude;
                     textFileService.createNote(GPSTrackerService.this, coordinates);
-                    textFileService.uploadNote();
+
+
+                    if(activeNetworks != null){
+                        if((activeNetworks.getType() == ConnectivityManager.TYPE_WIFI) || (activeNetworks.getType() == ConnectivityManager.TYPE_MOBILE)){
+                            textFileService.uploadNote();
+                        }
+                    }else{
+                        Log.i("Network info", "Not connected to internet");
+                    }
+
                 }
 
                 looper.quit();
