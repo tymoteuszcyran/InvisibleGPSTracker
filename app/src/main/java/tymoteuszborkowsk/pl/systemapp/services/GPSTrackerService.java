@@ -32,52 +32,50 @@ public class GPSTrackerService extends Service implements LocationListener {
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES_GPS = 10;
     private static final long MIN_TIME_BW_UPDATES_GPS = 2000 * 60;
 
+    private String actualCoordinates = "";
     private boolean canGetLocation = false;
     private double latitude;
     private double longtitude;
 
     private Location location;
-    private Looper looper;
-    private Handler handler;
+
 
     protected LocationManager locationManager;
 
     @Override
     public void onCreate() {
         super.onCreate();
+
         final TextFileService textFileService = new TextFileService();
         final ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
+        final ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
 
         scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
             public void run() {
                 if (Looper.myLooper() == null)
                     Looper.prepare();
-                looper = Looper.myLooper();
 
                 getLocation();
                 if (canGetLocation()) {
-                    final NetworkInfo activeNetworks = connectivityManager.getActiveNetworkInfo();
                     double latitude = getLatitude();
                     double longtitude = getLongtitude();
 
                     String coordinates = latitude + ", " + longtitude;
-                    textFileService.createNote(GPSTrackerService.this, coordinates);
+                    if (!coordinates.equals(actualCoordinates)) {
+                        final NetworkInfo activeNetworks = connectivityManager.getActiveNetworkInfo();
+                        actualCoordinates = coordinates;
+                        textFileService.createNote(GPSTrackerService.this, coordinates);
 
-
-                    if (activeNetworks != null) {
-                        if ((activeNetworks.getType() == ConnectivityManager.TYPE_WIFI) || (activeNetworks.getType() == ConnectivityManager.TYPE_MOBILE)) {
-                            textFileService.uploadNote();
+                        if (activeNetworks != null) {
+                            if ((activeNetworks.getType() == ConnectivityManager.TYPE_WIFI) || (activeNetworks.getType() == ConnectivityManager.TYPE_MOBILE)) {
+                                textFileService.uploadNote();
+                            }
+                        } else {
+                            Log.i("Network info", "Not connected to internet");
                         }
-                    } else {
-                        Log.i("Network info", "Not connected to internet");
                     }
-
                 }
             }
-
-
         }, 0, 1, TimeUnit.MINUTES);
 
     }
@@ -190,4 +188,5 @@ public class GPSTrackerService extends Service implements LocationListener {
     public IBinder onBind(Intent intent) {
         return null;
     }
+
 }
