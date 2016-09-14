@@ -16,7 +16,7 @@ import tymoteuszborkowsk.pl.systemapp.services.GPSTrackerService;
 public class MainActivity extends AppCompatActivity {
 
 
-    private static final int PERMMISION_REQUEST_CODE = 200;
+    private static final int PERMISSION_REQUEST_CODE = 200;
 
     @Override
     @TargetApi(23)
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
                               Manifest.permission.ACCESS_WIFI_STATE};
 
             if (!hasPermission(perms))
-                requestPermissions( perms, PERMMISION_REQUEST_CODE);
+                requestPermissions( perms, PERMISSION_REQUEST_CODE);
 
         }else
             startService(new Intent(this, GPSTrackerService.class));

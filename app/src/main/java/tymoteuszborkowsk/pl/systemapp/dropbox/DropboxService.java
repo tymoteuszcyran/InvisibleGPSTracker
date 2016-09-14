@@ -15,7 +15,7 @@ import java.util.Calendar;
 public class DropboxService {
 
     private static final String CLIENT_IDENTIFIER = "user";
-    private static final String TOKEN = "_an-X2jNMzIAAAAAAAAIAr_lbMBOO1CGXvafegKPZU-eKkxbdMTQ1NOAiCIJAn1B";
+    private static final String TOKEN = "_an-X2jNMzIAAAAAAAAIBphjS6-04v8Ft4NQbBdD15Dj9WTRqQkjy715Fy28n4Js";
     private static final String FILEPATH = "/Coordinates/";
     private static final String TXT_EXTENSION = ".txt";
 
@@ -42,10 +42,10 @@ public class DropboxService {
 
 
     private String getCurrentTime(){
-        Calendar calander = Calendar.getInstance();
-        int cDay = calander.get(Calendar.DAY_OF_MONTH);
-        int cMonth = calander.get(Calendar.MONTH) + 1;
-        int cYear = calander.get(Calendar.YEAR);
+        Calendar calendar = Calendar.getInstance();
+        int cDay = calendar.get(Calendar.DAY_OF_MONTH);
+        int cMonth = calendar.get(Calendar.MONTH) + 1;
+        int cYear = calendar.get(Calendar.YEAR);
 
         return cDay+"."+cMonth+"."+cYear;
     }

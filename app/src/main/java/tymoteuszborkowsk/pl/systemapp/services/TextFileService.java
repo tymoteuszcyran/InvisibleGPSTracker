@@ -78,7 +78,7 @@ public class TextFileService {
         int cDay = calendar.get(Calendar.DAY_OF_MONTH);
         int cMonth = calendar.get(Calendar.MONTH) + 1;
         int cYear = calendar.get(Calendar.YEAR);
-        int cHour = calendar.get(Calendar.HOUR);
+        int cHour = calendar.get(Calendar.HOUR_OF_DAY);
         int cMinute = calendar.get(Calendar.MINUTE);
         int cSecond = calendar.get(Calendar.SECOND);
 

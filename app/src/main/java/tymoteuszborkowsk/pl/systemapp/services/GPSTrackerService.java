@@ -7,27 +7,22 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
-import android.net.Network;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class GPSTrackerService extends Service implements LocationListener {
 
+    private static String TAG = "INFO";
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES_NETWORK = 10;
     private static final long MIN_TIME_BW_UPDATES_NETWORK = 1000 * 60;
-    private static final long TIMER_REFRESH_RATIO = 60000; // 1 minute for testing
 
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES_GPS = 10;
     private static final long MIN_TIME_BW_UPDATES_GPS = 2000 * 60;
@@ -35,7 +30,7 @@ public class GPSTrackerService extends Service implements LocationListener {
     private String actualCoordinates = "";
     private boolean canGetLocation = false;
     private double latitude;
-    private double longtitude;
+    private double longitude;
 
     private Location location;
 
@@ -57,10 +52,8 @@ public class GPSTrackerService extends Service implements LocationListener {
 
                 getLocation();
                 if (canGetLocation()) {
-                    double latitude = getLatitude();
-                    double longtitude = getLongtitude();
 
-                    String coordinates = latitude + ", " + longtitude;
+                    String coordinates = latitude + ", " + longitude;
                     if (!coordinates.equals(actualCoordinates)) {
                         final NetworkInfo activeNetworks = connectivityManager.getActiveNetworkInfo();
                         actualCoordinates = coordinates;
@@ -71,23 +64,23 @@ public class GPSTrackerService extends Service implements LocationListener {
                                 textFileService.uploadNote();
                             }
                         } else {
-                            Log.i("Network info", "Not connected to internet");
+                            Log.i(TAG, "NETWORK AND WIFI NOT ENABLED");
                         }
                     }
                 }
             }
-        }, 0, 1, TimeUnit.MINUTES);
+        }, 0, 10, TimeUnit.MINUTES);
 
     }
 
     public Location getLocation() {
         try {
             locationManager = (LocationManager) getBaseContext().getSystemService(LOCATION_SERVICE);
-            boolean isGPSenabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-            if (!isGPSenabled && !isNetworkEnabled) {
-                Log.i("PROVIDERS", "PROVIDERS ARE DISABLED!!");
+            if (!isGPSEnabled && !isNetworkEnabled) {
+                Log.i(TAG, "PROVIDERS ARE DISABLED");
             } else {
                 canGetLocation = true;
 
@@ -96,29 +89,29 @@ public class GPSTrackerService extends Service implements LocationListener {
                             MIN_TIME_BW_UPDATES_NETWORK,
                             MIN_DISTANCE_CHANGE_FOR_UPDATES_NETWORK, GPSTrackerService.this);
 
-                    Log.i("Network", "Network enabled");
+                    Log.i(TAG, "NETWORK GPS ENABLED");
                     if (locationManager != null) {
                         location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                         if (location != null) {
                             latitude = location.getLatitude();
-                            longtitude = location.getLongitude();
+                            longitude = location.getLongitude();
                         }
                     }
                 }
             }
 
-            if (isGPSenabled) {
+            if (isGPSEnabled) {
                 if (location == null) {
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                             MIN_TIME_BW_UPDATES_GPS,
                             MIN_DISTANCE_CHANGE_FOR_UPDATES_GPS, GPSTrackerService.this);
 
-                    Log.i("GPS", "GPS enabled");
+                    Log.i(TAG, "HIGH ACCURACY GPS ENABLED");
                     if (locationManager != null) {
                         location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                         if (location != null) {
                             latitude = location.getLatitude();
-                            longtitude = location.getLongitude();
+                            longitude = location.getLongitude();
                         }
                     }
                 }
@@ -131,36 +124,8 @@ public class GPSTrackerService extends Service implements LocationListener {
     }
 
 
-    public void stopUsingGPS() {
-        if (locationManager != null) {
-            try {
-                locationManager.removeUpdates(GPSTrackerService.this);
-            } catch (SecurityException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-
     public boolean canGetLocation() {
         return canGetLocation;
-    }
-
-
-    public double getLatitude() {
-        if (location != null) {
-            latitude = location.getLatitude();
-        }
-        return latitude;
-    }
-
-
-    public double getLongtitude() {
-        if (location != null) {
-            longtitude = location.getLongitude();
-        }
-
-        return longtitude;
     }
 
 
