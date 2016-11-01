@@ -15,7 +15,7 @@ import java.util.Calendar;
 public class DropboxService {
 
     private static final String CLIENT_IDENTIFIER = "user";
-    private static final String TOKEN = "_an-X2jNMzIAAAAAAAAIBphjS6-04v8Ft4NQbBdD15Dj9WTRqQkjy715Fy28n4Js";
+    private static final String TOKEN = "_an-X2jNMzIAAAAAAAAIFbW8RdeIRbefCIfuePrPcjKpEazCXzfMCGCzZKEzC6hF";
     private static final String FILEPATH = "/Coordinates/";
     private static final String TXT_EXTENSION = ".txt";
 

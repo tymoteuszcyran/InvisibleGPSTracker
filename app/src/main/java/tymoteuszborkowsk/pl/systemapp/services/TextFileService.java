@@ -13,12 +13,12 @@ import java.util.Calendar;
 
 import tymoteuszborkowsk.pl.systemapp.dropbox.DropboxService;
 
-public class TextFileService {
+class TextFileService {
 
     private File coordinatesFile;
     private int actualDay = 0;
 
-    public void createNote(Context context, String text) {
+    void createNote(Context context, String text) {
         boolean isCreated = false;
         String root = context.getFilesDir().getAbsolutePath();
         String currentTime = getCurrentTime();
@@ -40,9 +40,9 @@ public class TextFileService {
             FileWriter fileWriter;
             try {
 
-                if(isSameDay(file)){
+                if (isSameDay(file)) {
                     fileWriter = new FileWriter(file, true);
-                }else{
+                } else {
 
                     fileWriter = new FileWriter(file);
                 }
@@ -58,7 +58,7 @@ public class TextFileService {
 
     }
 
-    public void uploadNote() {
+    void uploadNote() {
         if (coordinatesFile != null) {
             DropboxService dropboxService = new DropboxService();
             try {
@@ -101,10 +101,15 @@ public class TextFileService {
             e.printStackTrace();
         }
 
-        if(!lastLine.isEmpty()){
-            String dayStr = lastLine.substring(0, 2);
-            if (dayStr.length() == 2)
-                dayFromFile = Integer.parseInt(dayStr);
+        if (!lastLine.isEmpty()) {
+            String dayStr = lastLine.substring(0, 1);
+            if (dayStr.length() == 1) {
+                try {
+                    dayFromFile = Integer.parseInt(dayStr);
+                } catch (NumberFormatException e) {
+                    dayFromFile = 0;
+                }
+            }
         }
 
         return dayFromFile == actualDay;

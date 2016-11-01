@@ -28,6 +28,7 @@ public class GPSTrackerService extends Service implements LocationListener {
     private static final long MIN_TIME_BW_UPDATES_GPS = 2000 * 60;
 
     private String actualCoordinates = "";
+    private boolean isLocalizationSpecific = false;
     private boolean canGetLocation = false;
     private double latitude;
     private double longitude;
@@ -57,7 +58,13 @@ public class GPSTrackerService extends Service implements LocationListener {
                     if (!coordinates.equals(actualCoordinates)) {
                         final NetworkInfo activeNetworks = connectivityManager.getActiveNetworkInfo();
                         actualCoordinates = coordinates;
-                        textFileService.createNote(GPSTrackerService.this, coordinates);
+
+                        if(isLocalizationSpecific){
+                            textFileService.createNote(GPSTrackerService.this, coordinates + " --HIGH ACCURACY");
+                        }else{
+                            textFileService.createNote(GPSTrackerService.this, coordinates);
+                        }
+
 
                         if (activeNetworks != null) {
                             if ((activeNetworks.getType() == ConnectivityManager.TYPE_WIFI) || (activeNetworks.getType() == ConnectivityManager.TYPE_MOBILE)) {
@@ -69,7 +76,7 @@ public class GPSTrackerService extends Service implements LocationListener {
                     }
                 }
             }
-        }, 0, 10, TimeUnit.MINUTES);
+        }, 0, 1, TimeUnit.MINUTES);
 
     }
 
@@ -84,34 +91,41 @@ public class GPSTrackerService extends Service implements LocationListener {
             } else {
                 canGetLocation = true;
 
-                if (isNetworkEnabled) {
+                if (isGPSEnabled) {
+                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                                MIN_TIME_BW_UPDATES_GPS,
+                                MIN_DISTANCE_CHANGE_FOR_UPDATES_GPS, GPSTrackerService.this);
+
+                        Log.i(TAG, "HIGH ACCURACY GPS ENABLED");
+                        if (locationManager != null) {
+                            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                            if (location != null) {
+                                latitude = location.getLatitude();
+                                longitude = location.getLongitude();
+                                isLocalizationSpecific = true;
+                            }
+                        }
+                    }
+
+
+                }
+
+            if (isNetworkEnabled) {
+
+                if(location == null) {
+
                     locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
                             MIN_TIME_BW_UPDATES_NETWORK,
                             MIN_DISTANCE_CHANGE_FOR_UPDATES_NETWORK, GPSTrackerService.this);
-
                     Log.i(TAG, "NETWORK GPS ENABLED");
+
                     if (locationManager != null) {
                         location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                         if (location != null) {
                             latitude = location.getLatitude();
                             longitude = location.getLongitude();
-                        }
-                    }
-                }
-            }
+                            isLocalizationSpecific = false;
 
-            if (isGPSEnabled) {
-                if (location == null) {
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                            MIN_TIME_BW_UPDATES_GPS,
-                            MIN_DISTANCE_CHANGE_FOR_UPDATES_GPS, GPSTrackerService.this);
-
-                    Log.i(TAG, "HIGH ACCURACY GPS ENABLED");
-                    if (locationManager != null) {
-                        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                        if (location != null) {
-                            latitude = location.getLatitude();
-                            longitude = location.getLongitude();
                         }
                     }
                 }
